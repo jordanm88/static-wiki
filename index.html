@@ -192,20 +192,6 @@ async function init() {
         }
     });
 
-    // Initialize
-    async function init() {
-        try {
-            await Promise.all([
-                renderSection('header', 'header'),
-                renderSection('nav', 'navmenu'),
-                renderSection('footer', 'footer')
-            ]);
-            await loadPage();
-        } catch (error) {
-            console.error('Initialization error:', error);
-        }
-    }
-
     window.addEventListener('hashchange', loadPage);
     window.addEventListener('load', init);
 
