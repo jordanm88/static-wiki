@@ -112,7 +112,7 @@ header {
     padding-top: calc(var(--header-height) + var(--spacing));
 }
 
-/* Navigation */
+/* Nav menu base styling */
 nav {
     padding: 1rem 0;
 }
@@ -132,20 +132,28 @@ nav li {
 nav li:last-child {
     border-bottom: none;
 }
-nav a {
-    display: block;
-    padding: 0.5em 0;
-    color: var(--text-color);
-}
 
 /* Link styling */
 nav a {
     display: block;
     text-decoration: none;
     color: inherit;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 2.5rem 0.5rem 1rem; /* Added right padding for parent items */
     transition: all 0.2s ease;
     position: relative;
+}
+
+/* Parent items with children */
+nav li > ul {
+    margin-left: 1rem;
+}
+
+nav li > ul > li {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05); /* Lighter borders for nested items */
+}
+
+nav li > ul > li:last-child {
+    border-bottom: none;
 }
 
 /* Dot indicator for active page */
@@ -156,21 +164,25 @@ nav a.active::before {
     opacity: 0.6;
 }
 
+/* Parent indicator */
+nav li > ul {
+    position: relative;
+}
+
+nav li > a + ul::before {
+    content: "▾";
+    position: absolute;
+    right: 1rem;
+    top: -2rem;
+    opacity: 0.4;
+    font-size: 0.8em;
+}
+
 /* Hover effects */
 nav a:hover {
     opacity: 0.7;
     padding-left: 1.2rem;
-}
-
-/* Add subtle background on hover */
-nav a:hover {
     background: rgba(0, 0, 0, 0.03);
-}
-
-/* Code blocks */
-pre, code {
-    font-family: var(--font-mono);
-    font-size: 0.9375rem;
 }
 
 /* Header specific */
