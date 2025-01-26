@@ -9,19 +9,26 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
-    <button id="menu-toggle" aria-label="Toggle Menu">
-        <span></span>
-        <span></span>
-        <span></span>
-    </button>
 
-    <header id="header"></header>
-    <nav id="nav"></nav>
-    <main id="content"></main>
-    <footer id="footer"></footer>
+    <body>
+        <div class="layout-wrapper">
+            <button id="menu-toggle" aria-label="Toggle Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+    
+            <nav id="nav"></nav>
+    
+            <div class="content-wrapper">
+                <header id="header"></header>
+                <main id="content"></main>
+                <footer id="footer"></footer>
+            </div>
+        </div>
 
     <script>
-        
+
     // Configuration
     // =============================================================
     const CONFIG = {
@@ -33,12 +40,6 @@
         DEFAULT_PAGE: 'Home'  // Change this to whatever page you want as default
     };
 
-    // Console checks
-    console.log('Base URL:', CONFIG.BASE_URL);
-    console.log('Components path:', CONFIG.PATHS.components);
-    console.log('Content path:', CONFIG.PATHS.content);
-
-    
     // Scripts
     // =============================================================
 
@@ -69,94 +70,51 @@
         }]
     });
 
-// Utility functions
-async function fetchMD(filename, type = 'content') {
+    // Utility functions
+    async function fetchMD(filename, type = 'content') {
     try {
         const path = type === 'components' ? CONFIG.PATHS.components : CONFIG.PATHS.content;
+        // Only remove hash symbol, preserve case and spaces
         filename = filename.replace(/^#/, '');
-        const url = `${CONFIG.BASE_URL}${path}/${filename}.md`;
-        console.log(`Attempting to fetch: ${url}`);
-
-        const response = await fetch(url);
-
-        // Check response status and provide detailed error
+        // Add timestamp to prevent caching
+        const timestamp = new Date().getTime();
+        const url = `${CONFIG.BASE_URL}${path}/${filename}.md?v=${timestamp}`;
+        console.log('Fetching:', url);
+        const response = await fetch(url, {
+            cache: 'no-store', // Force fetch to bypass cache
+            headers: {
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache'
+            }
+        });
         if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: Failed to load ${url}`);
+            console.error(`HTTP error! status: ${response.status}`);
+            throw new Error(`Failed to load ${filename}.md`);
         }
-
-        const text = await response.text();
-        if (!text.trim()) {
-            throw new Error(`Empty content received from ${url}`);
-        }
-
-        return text;
+        return await response.text();
     } catch (error) {
-        console.error(`Failed to fetch ${filename}.md:`, error);
-        return `<div class="error-message">Failed to load ${filename}: ${error.message}</div>`;
+        console.error('Fetch error:', error);
+        return `Error loading ${filename}.md`;
     }
 }
 
-function setLoading(id) {
-    const element = document.getElementById(id);
-    if (element) {
-        element.classList.add('loading');
-    }
-}
-
-function clearLoading(id) {
-    const element = document.getElementById(id);
-    if (element) {
-        element.classList.remove('loading');
-    }
-}
-        
-async function renderSection(id, filename) {
-    const element = document.getElementById(id);
-    if (!element) {
-        console.error(`Element with id "${id}" not found`);
-        return;
+    function setLoading(id) {
+        const element = document.getElementById(id);
+        if (element) element.classList.add('loading');
     }
 
-    try {
+    function clearLoading(id) {
+        const element = document.getElementById(id);
+        if (element) element.classList.remove('loading');
+    }
+
+    // Rendering functions
+    async function renderSection(id, filename) {
         setLoading(id);
         const content = await fetchMD(filename, 'components');
-        element.innerHTML = marked.parse(content);
-    } catch (error) {
-        console.error(`Error rendering ${id}:`, error);
-        element.innerHTML = `<div class="error-message">Error loading ${id}</div>`;
-    } finally {
+        document.getElementById(id).innerHTML = marked.parse(content);
         clearLoading(id);
     }
-}
-
-// Initialize with better error handling
-async function init() {
-    try {
-        console.log('Starting initialization...');
-
-        const components = [
-            { id: 'header', file: 'header' },
-            { id: 'nav', file: 'navmenu' },
-            { id: 'footer', file: 'footer' }
-        ];
-
-        // Load components sequentially to better identify issues
-        for (const comp of components) {
-            console.log(`Loading ${comp.id}...`);
-            await renderSection(comp.id, comp.file);
-        }
-
-        await loadPage();
-        console.log('Initialization complete');
-    } catch (error) {
-        console.error('Critical initialization error:', error);
-        document.body.innerHTML += `
-            <div class="critical-error">
-                <h2>Loading Error</h2>
-                <p>Failed to initialize site components: ${error.message}</p>
-            </div>`;
-    }
-}
 
     // Navigation handling
     function getCurrentPage() {
@@ -177,20 +135,26 @@ async function init() {
         document.body.classList.toggle('menu-open');
     });
 
-    document.getElementById('menu-toggle').addEventListener('click', function() {
-    document.body.classList.toggle('menu-open');
-    });
-
-    document.querySelector('.menu-overlay')?.addEventListener('click', function() {
-    document.body.classList.remove('menu-open');
-    });
-
     // Close menu when clicking a link (mobile)
     document.addEventListener('click', (e) => {
         if (e.target.tagName === 'A') {
             document.body.classList.remove('menu-open');
         }
     });
+
+    // Initialize
+    async function init() {
+        try {
+            await Promise.all([
+                renderSection('header', 'header'),
+                renderSection('nav', 'navmenu'),
+                renderSection('footer', 'footer')
+            ]);
+            await loadPage();
+        } catch (error) {
+            console.error('Initialization error:', error);
+        }
+    }
 
     window.addEventListener('hashchange', loadPage);
     window.addEventListener('load', init);
