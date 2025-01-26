@@ -63,43 +63,80 @@
         }]
     });
 
-    // Utility functions
-    async function fetchMD(filename, type = 'content') {
-        try {
-            const path = type === 'components' ? CONFIG.PATHS.components : CONFIG.PATHS.content;
-            // Only remove hash symbol, preserve case and spaces
-            filename = filename.replace(/^#/, '');
-            const url = `${CONFIG.BASE_URL}${path}/${filename}.md`;
-            console.log('Fetching:', url);
-            const response = await fetch(url);
-            if (!response.ok) {
-                console.error(`HTTP error! status: ${response.status}`);
-                throw new Error(`Failed to load ${filename}.md`);
-            }
-            return await response.text();
-        } catch (error) {
-            console.error('Fetch error:', error);
-            return `Error loading ${filename}.md`;
+// Utility functions
+async function fetchMD(filename, type = 'content') {
+    try {
+        const path = type === 'components' ? CONFIG.PATHS.components : CONFIG.PATHS.content;
+        filename = filename.replace(/^#/, '');
+        const url = `${CONFIG.BASE_URL}${path}/${filename}.md`;
+        console.log(`Attempting to fetch: ${url}`);
+
+        const response = await fetch(url);
+
+        // Check response status and provide detailed error
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: Failed to load ${url}`);
         }
+
+        const text = await response.text();
+        if (!text.trim()) {
+            throw new Error(`Empty content received from ${url}`);
+        }
+
+        return text;
+    } catch (error) {
+        console.error(`Failed to fetch ${filename}.md:`, error);
+        return `<div class="error-message">Failed to load ${filename}: ${error.message}</div>`;
+    }
+}
+
+async function renderSection(id, filename) {
+    const element = document.getElementById(id);
+    if (!element) {
+        console.error(`Element with id "${id}" not found`);
+        return;
     }
 
-    function setLoading(id) {
-        const element = document.getElementById(id);
-        if (element) element.classList.add('loading');
-    }
-
-    function clearLoading(id) {
-        const element = document.getElementById(id);
-        if (element) element.classList.remove('loading');
-    }
-
-    // Rendering functions
-    async function renderSection(id, filename) {
+    try {
         setLoading(id);
         const content = await fetchMD(filename, 'components');
-        document.getElementById(id).innerHTML = marked.parse(content);
+        element.innerHTML = marked.parse(content);
+    } catch (error) {
+        console.error(`Error rendering ${id}:`, error);
+        element.innerHTML = `<div class="error-message">Error loading ${id}</div>`;
+    } finally {
         clearLoading(id);
     }
+}
+
+// Initialize with better error handling
+async function init() {
+    try {
+        console.log('Starting initialization...');
+
+        const components = [
+            { id: 'header', file: 'header' },
+            { id: 'nav', file: 'navmenu' },
+            { id: 'footer', file: 'footer' }
+        ];
+
+        // Load components sequentially to better identify issues
+        for (const comp of components) {
+            console.log(`Loading ${comp.id}...`);
+            await renderSection(comp.id, comp.file);
+        }
+
+        await loadPage();
+        console.log('Initialization complete');
+    } catch (error) {
+        console.error('Critical initialization error:', error);
+        document.body.innerHTML += `
+            <div class="critical-error">
+                <h2>Loading Error</h2>
+                <p>Failed to initialize site components: ${error.message}</p>
+            </div>`;
+    }
+}
 
     // Navigation handling
     function getCurrentPage() {
