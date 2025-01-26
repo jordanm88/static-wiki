@@ -125,7 +125,7 @@ nav ul {
 
 nav li {
     margin: 0;
-    padding: 0.5rem 0;
+    padding: 0.5rem 1rem;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
@@ -138,7 +138,8 @@ nav a {
     display: block;
     text-decoration: none;
     color: inherit;
-    padding: 0.5rem 2.5rem 0.5rem 1rem; /* Added right padding for parent items */
+    margin: -0.5rem -1rem; /* Negative margin to offset li padding */
+    padding: 0.5rem 1rem;
     transition: all 0.2s ease;
     position: relative;
 }
@@ -169,13 +170,10 @@ nav li > ul {
     position: relative;
 }
 
+/* Adjust the parent indicator position */
 nav li > a + ul::before {
-    content: "▾";
-    position: absolute;
     right: 1rem;
-    top: -2rem;
-    opacity: 0.4;
-    font-size: 0.8em;
+    top: -1.5rem; /* Adjust based on your specific needs */
 }
 
 /* Hover effects */
