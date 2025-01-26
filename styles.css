@@ -355,6 +355,7 @@ document.head.appendChild(style);
         transition: 0.3s;
         overflow-y: auto;
         padding-top: calc(var(--header-height) + var(--spacing));
+        z-index: 999; /* Add this to ensure nav appears below hamburger */
     }
 
     .menu-open nav {
@@ -388,9 +389,20 @@ document.head.appendChild(style);
     }
 }
 
-/* Smooth transition for mode changes */
-body, nav, main pre, main code, #menu-toggle span {
-    transition: background-color 0.3s ease, color 0.3s ease;
+/* Add overlay for mobile menu */
+.menu-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+}
+
+.menu-open .menu-overlay {
+    display: block;
 }
 
 /* Print styles */
