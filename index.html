@@ -28,7 +28,7 @@
         </div>
 
     <script>
-
+        
     // Configuration
     // =============================================================
     const CONFIG = {
@@ -40,6 +40,12 @@
         DEFAULT_PAGE: 'Home'  // Change this to whatever page you want as default
     };
 
+    // Console checks
+    console.log('Base URL:', CONFIG.BASE_URL);
+    console.log('Components path:', CONFIG.PATHS.components);
+    console.log('Content path:', CONFIG.PATHS.content);
+
+    
     // Scripts
     // =============================================================
 
@@ -98,23 +104,67 @@
     }
 }
 
-    function setLoading(id) {
-        const element = document.getElementById(id);
-        if (element) element.classList.add('loading');
+function setLoading(id) {
+    const element = document.getElementById(id);
+    if (element) {
+        element.classList.add('loading');
+    }
+}
+
+function clearLoading(id) {
+    const element = document.getElementById(id);
+    if (element) {
+        element.classList.remove('loading');
+    }
+}
+        
+async function renderSection(id, filename) {
+    const element = document.getElementById(id);
+    if (!element) {
+        console.error(`Element with id "${id}" not found`);
+        return;
     }
 
-    function clearLoading(id) {
-        const element = document.getElementById(id);
-        if (element) element.classList.remove('loading');
-    }
-
-    // Rendering functions
-    async function renderSection(id, filename) {
+    try {
         setLoading(id);
         const content = await fetchMD(filename, 'components');
-        document.getElementById(id).innerHTML = marked.parse(content);
+        element.innerHTML = marked.parse(content);
+    } catch (error) {
+        console.error(`Error rendering ${id}:`, error);
+        element.innerHTML = `<div class="error-message">Error loading ${id}</div>`;
+    } finally {
         clearLoading(id);
     }
+}
+
+// Initialize with better error handling
+async function init() {
+    try {
+        console.log('Starting initialization...');
+
+        const components = [
+            { id: 'header', file: 'header' },
+            { id: 'nav', file: 'navmenu' },
+            { id: 'footer', file: 'footer' }
+        ];
+
+        // Load components sequentially to better identify issues
+        for (const comp of components) {
+            console.log(`Loading ${comp.id}...`);
+            await renderSection(comp.id, comp.file);
+        }
+
+        await loadPage();
+        console.log('Initialization complete');
+    } catch (error) {
+        console.error('Critical initialization error:', error);
+        document.body.innerHTML += `
+            <div class="critical-error">
+                <h2>Loading Error</h2>
+                <p>Failed to initialize site components: ${error.message}</p>
+            </div>`;
+    }
+}
 
     // Navigation handling
     function getCurrentPage() {
@@ -135,26 +185,20 @@
         document.body.classList.toggle('menu-open');
     });
 
+    document.getElementById('menu-toggle').addEventListener('click', function() {
+    document.body.classList.toggle('menu-open');
+    });
+
+    document.querySelector('.menu-overlay')?.addEventListener('click', function() {
+    document.body.classList.remove('menu-open');
+    });
+
     // Close menu when clicking a link (mobile)
     document.addEventListener('click', (e) => {
         if (e.target.tagName === 'A') {
             document.body.classList.remove('menu-open');
         }
     });
-
-    // Initialize
-    async function init() {
-        try {
-            await Promise.all([
-                renderSection('header', 'header'),
-                renderSection('nav', 'navmenu'),
-                renderSection('footer', 'footer')
-            ]);
-            await loadPage();
-        } catch (error) {
-            console.error('Initialization error:', error);
-        }
-    }
 
     window.addEventListener('hashchange', loadPage);
     window.addEventListener('load', init);
