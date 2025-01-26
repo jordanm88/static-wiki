@@ -14,9 +14,9 @@ A lightweight, markdown-powered CMS that turns your plain text files into a dyna
 ## How to use
 
 - Clone repo
-- Update 3x config field values in index.html
+- Update title and 3x config field values in index.html
 - Create *.md files in the content sub-directory - these will be your pages
-- Edit the navmenu.md, header.md and footer.md files in the _components subdirectory
+- Edit the navmenu.md, header.md and footer.md files in the components subdirectory (don't change their names)
 - Open index.html in your browser to confirm everything works
 - Publish to Github Pages or the host of your choice
 
