@@ -112,34 +112,75 @@ header {
     padding-top: calc(var(--header-height) + var(--spacing));
 }
 
-/* Navigation */
+/* Nav menu base styling */
 nav {
-    font-family: var(--font-heading);
-    font-weight: var(--font-weight-medium);
-    letter-spacing: var(--letter-spacing-wide);
+    padding: 1rem 0;
 }
 
 nav ul {
     list-style: none;
+    padding: 0;
     margin: 0;
-    padding: 0 var(--spacing);  /* Add horizontal padding */
 }
 
-nav ul ul {
-    margin-left: 1.5em;
-    padding: 0;  /* Remove padding for nested items */
+nav li {
+    margin: 0;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
+nav li:last-child {
+    border-bottom: none;
+}
+
+/* Link styling */
 nav a {
     display: block;
-    padding: 0.5em 0;
-    color: var(--text-color);
+    text-decoration: none;
+    color: inherit;
+    margin: -0.5rem -1rem; /* Negative margin to offset li padding */
+    padding: 0.5rem 1rem;
+    transition: all 0.2s ease;
+    position: relative;
 }
 
-/* Code blocks */
-pre, code {
-    font-family: var(--font-mono);
-    font-size: 0.9375rem;
+/* Parent items with children */
+nav li > ul {
+    margin-left: 1rem;
+}
+
+nav li > ul > li {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05); /* Lighter borders for nested items */
+}
+
+nav li > ul > li:last-child {
+    border-bottom: none;
+}
+
+/* Dot indicator for active page */
+nav a.active::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    opacity: 0.6;
+}
+
+/* Parent indicator */
+nav li > ul {
+    position: relative;
+}
+
+/* Adjust the parent indicator position */
+nav li > a + ul::before {
+    right: 1rem;
+    top: -1.5rem; /* Adjust based on your specific needs */
+}
+
+/* Hover effects */
+nav a:hover {
+    opacity: 0.7;
+    padding-left: 1.2rem;
+    background: rgba(0, 0, 0, 0.03);
 }
 
 /* Header specific */
@@ -262,6 +303,41 @@ footer p {
     line-height: 1.4;
 }
 
+// Loading state
+.loading {
+    opacity: 0.5;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+// Error states
+const style = document.createElement('style');
+style.textContent = `
+    .error-message {
+        padding: 1rem;
+        border: 1px solid #ff0000;
+        background: #fff0f0;
+        color: #ff0000;
+        margin: 1rem 0;
+    }
+    .critical-error {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 2rem;
+        background: white;
+        border: 2px solid red;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        z-index: 9999;
+    }
+    .loading {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+`;
+document.head.appendChild(style);
+
 /* Mobile styles */
 @media (max-width: 768px) {
     #menu-toggle {
@@ -279,6 +355,7 @@ footer p {
         transition: 0.3s;
         overflow-y: auto;
         padding-top: calc(var(--header-height) + var(--spacing));
+        z-index: 999; /* Add this to ensure nav appears below hamburger */
     }
 
     .menu-open nav {
@@ -312,9 +389,20 @@ footer p {
     }
 }
 
-/* Smooth transition for mode changes */
-body, nav, main pre, main code, #menu-toggle span {
-    transition: background-color 0.3s ease, color 0.3s ease;
+/* Add overlay for mobile menu */
+.menu-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+}
+
+.menu-open .menu-overlay {
+    display: block;
 }
 
 /* Print styles */
