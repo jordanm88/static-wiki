@@ -4,21 +4,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JD CMS</title>
+    <title>jdSite Demo</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
-    <button id="menu-toggle" aria-label="Toggle Menu">
-        <span></span>
-        <span></span>
-        <span></span>
-    </button>
 
-    <header id="header"></header>
-    <nav id="nav"></nav>
-    <main id="content"></main>
-    <footer id="footer"></footer>
+    <body>
+        <div class="layout-wrapper">
+            <button id="menu-toggle" aria-label="Toggle Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+    
+            <nav id="nav"></nav>
+    
+            <div class="content-wrapper">
+                <header id="header"></header>
+                <main id="content"></main>
+                <footer id="footer"></footer>
+            </div>
+        </div>
 
     <script>
 
@@ -65,23 +72,31 @@
 
     // Utility functions
     async function fetchMD(filename, type = 'content') {
-        try {
-            const path = type === 'components' ? CONFIG.PATHS.components : CONFIG.PATHS.content;
-            // Only remove hash symbol, preserve case and spaces
-            filename = filename.replace(/^#/, '');
-            const url = `${CONFIG.BASE_URL}${path}/${filename}.md`;
-            console.log('Fetching:', url);
-            const response = await fetch(url);
-            if (!response.ok) {
-                console.error(`HTTP error! status: ${response.status}`);
-                throw new Error(`Failed to load ${filename}.md`);
+    try {
+        const path = type === 'components' ? CONFIG.PATHS.components : CONFIG.PATHS.content;
+        // Only remove hash symbol, preserve case and spaces
+        filename = filename.replace(/^#/, '');
+        // Add timestamp to prevent caching
+        const timestamp = new Date().getTime();
+        const url = `${CONFIG.BASE_URL}${path}/${filename}.md?v=${timestamp}`;
+        console.log('Fetching:', url);
+        const response = await fetch(url, {
+            cache: 'no-store', // Force fetch to bypass cache
+            headers: {
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache'
             }
-            return await response.text();
-        } catch (error) {
-            console.error('Fetch error:', error);
-            return `Error loading ${filename}.md`;
+        });
+        if (!response.ok) {
+            console.error(`HTTP error! status: ${response.status}`);
+            throw new Error(`Failed to load ${filename}.md`);
         }
+        return await response.text();
+    } catch (error) {
+        console.error('Fetch error:', error);
+        return `Error loading ${filename}.md`;
     }
+}
 
     function setLoading(id) {
         const element = document.getElementById(id);
