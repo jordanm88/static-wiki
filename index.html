@@ -1,0 +1,149 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JD CMS</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <button id="menu-toggle" aria-label="Toggle Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <header id="header"></header>
+    <nav id="nav"></nav>
+    <main id="content"></main>
+    <footer id="footer"></footer>
+
+    <script>
+
+    // Configuration
+    // =============================================================
+    const CONFIG = {
+        BASE_URL: './',
+        PATHS: {
+            components: '_components',
+            content: 'content'
+        },
+        DEFAULT_PAGE: 'Home'  // Change this to whatever page you want as default
+    };
+
+    // Scripts
+    // =============================================================
+
+    // Configure marked to handle wikilinks
+    marked.use({
+        extensions: [{
+            name: 'wikilink',
+            level: 'inline',
+            start(src) {
+                const match = src.match(/\[\[/);
+                return match?.index;
+            },
+            tokenizer(src) {
+                const rule = /^\[\[([^\]\|]+)(?:\|([^\]]+))?\]\]/;
+                const match = rule.exec(src);
+                if (match) {
+                    return {
+                        type: 'wikilink',
+                        raw: match[0],
+                        text: match[2] || match[1],
+                        link: match[1].trim(), // Remove trim() if you want to preserve leading/trailing spaces
+                    };
+                }
+            },
+            renderer(token) {
+                return `<a href="#${token.link}">${token.text}</a>`;
+            }
+        }]
+    });
+
+    // Utility functions
+    async function fetchMD(filename, type = 'content') {
+        try {
+            const path = type === 'components' ? CONFIG.PATHS.components : CONFIG.PATHS.content;
+            // Only remove hash symbol, preserve case and spaces
+            filename = filename.replace(/^#/, '');
+            const url = `${CONFIG.BASE_URL}${path}/${filename}.md`;
+            console.log('Fetching:', url);
+            const response = await fetch(url);
+            if (!response.ok) {
+                console.error(`HTTP error! status: ${response.status}`);
+                throw new Error(`Failed to load ${filename}.md`);
+            }
+            return await response.text();
+        } catch (error) {
+            console.error('Fetch error:', error);
+            return `Error loading ${filename}.md`;
+        }
+    }
+
+    function setLoading(id) {
+        const element = document.getElementById(id);
+        if (element) element.classList.add('loading');
+    }
+
+    function clearLoading(id) {
+        const element = document.getElementById(id);
+        if (element) element.classList.remove('loading');
+    }
+
+    // Rendering functions
+    async function renderSection(id, filename) {
+        setLoading(id);
+        const content = await fetchMD(filename, 'components');
+        document.getElementById(id).innerHTML = marked.parse(content);
+        clearLoading(id);
+    }
+
+    // Navigation handling
+    function getCurrentPage() {
+        const hash = window.location.hash.slice(1);
+        return hash || CONFIG.DEFAULT_PAGE;
+    }
+
+    async function loadPage() {
+        const page = getCurrentPage();
+        setLoading('content');
+        const content = await fetchMD(page, 'content');
+        document.getElementById('content').innerHTML = marked.parse(content);
+        clearLoading('content');
+    }
+
+    // Menu toggle
+    document.getElementById('menu-toggle').addEventListener('click', () => {
+        document.body.classList.toggle('menu-open');
+    });
+
+    // Close menu when clicking a link (mobile)
+    document.addEventListener('click', (e) => {
+        if (e.target.tagName === 'A') {
+            document.body.classList.remove('menu-open');
+        }
+    });
+
+    // Initialize
+    async function init() {
+        try {
+            await Promise.all([
+                renderSection('header', 'header'),
+                renderSection('nav', 'navmenu'),
+                renderSection('footer', 'footer')
+            ]);
+            await loadPage();
+        } catch (error) {
+            console.error('Initialization error:', error);
+        }
+    }
+
+    window.addEventListener('hashchange', loadPage);
+    window.addEventListener('load', init);
+
+</script>
+</body>
+</html>

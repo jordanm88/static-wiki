@@ -1,0 +1,329 @@
+/* style.css */
+:root {
+    --primary-color: #2d3436;
+    --accent-color: #0984e3;
+    --bg-color: #ffffff;
+    --text-color: #2d3436;
+    --nav-border-color: #eee;
+    --code-bg-color: #f5f5f5;
+    --nav-width: 250px;
+    --header-height: 60px;
+    --spacing: clamp(1rem, 3vw, 2rem);
+    --font-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+    --font-body: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --line-height-heading: 1.2;
+    --line-height-body: 1.6;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --letter-spacing-tight: -0.015em;
+    --letter-spacing-wide: 0.02em;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --primary-color: #ecf0f1;
+        --accent-color: #74b9ff;
+        --bg-color: #1a1a1a;
+        --text-color: #ecf0f1;
+        --nav-border-color: #333;
+        --code-bg-color: #2d2d2d;
+    }
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Base typography */
+body {
+    font-family: var(--font-body);
+    font-weight: var(--font-weight-normal);
+    line-height: var(--line-height-body);
+    color: var(--text-color);
+    background: var(--bg-color);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    line-height: var(--line-height-heading);
+    letter-spacing: var(--letter-spacing-tight);
+    margin-bottom: 1em;
+}
+
+h1 { 
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: var(--font-weight-bold);
+}
+
+h2 { 
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: var(--font-weight-semibold);
+}
+
+h3 { 
+    font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+    font-weight: var(--font-weight-semibold);
+}
+
+h4 {
+    font-size: clamp(1.1rem, 2vw, 1.5rem);
+    font-weight: var(--font-weight-medium);
+}
+
+/* Body text */
+p, ul, ol { 
+    margin-bottom: 1.5em;
+    font-size: 1.0625rem;
+}
+
+/* Links */
+a {
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+a:hover { 
+    text-decoration: underline;
+}
+
+hr {
+    opacity: 0.5;
+}
+
+/* Layout */
+header, main, footer {
+    padding: var(--spacing);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+header {
+    padding-top: calc(var(--header-height) + var(--spacing));
+}
+
+/* Navigation */
+nav {
+    font-family: var(--font-heading);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-wide);
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0 var(--spacing);  /* Add horizontal padding */
+}
+
+nav ul ul {
+    margin-left: 1.5em;
+    padding: 0;  /* Remove padding for nested items */
+}
+
+nav a {
+    display: block;
+    padding: 0.5em 0;
+    color: var(--text-color);
+}
+
+/* Code blocks */
+pre, code {
+    font-family: var(--font-mono);
+    font-size: 0.9375rem;
+}
+
+/* Header specific */
+header h1 {
+    letter-spacing: -0.03em;
+}
+
+header h2 {
+    font-weight: var(--font-weight-medium);
+    color: var(--text-color);
+    opacity: 0.85;
+}
+
+/* Lists */
+main ul, main ol {
+    padding-left: 1.5em;
+}
+
+main li {
+    margin-bottom: 0.5em;
+    line-height: 1.5;
+}
+
+/* Small text */
+small {
+    font-size: 0.875rem;
+    letter-spacing: 0.01em;
+}
+
+/* Footer */
+footer {
+    font-size: 0.9375rem;
+}
+
+/* Hamburger Menu */
+#menu-toggle {
+    display: none;
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1000;
+    width: 40px;
+    height: 40px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+#menu-toggle span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    margin: 5px auto;
+    background: var(--primary-color);
+    transition: 0.3s;
+}
+
+/* Markdown content styling */
+main {
+    padding: var(--spacing);
+}
+
+main ul, main ol {
+    padding-left: 1.5em;
+    margin-bottom: 1em;
+}
+
+main ul ul, 
+main ol ol,
+main ul ol,
+main ol ul {
+    margin-left: 1em;
+    margin-bottom: 0;
+}
+
+main li {
+    margin-bottom: 0.5em;
+}
+
+/* Nested list items */
+main li > ul,
+main li > ol {
+    margin-top: 0.5em;
+}
+
+/* Preserve whitespace for code blocks */
+main pre {
+    white-space: pre-wrap;
+    padding: 1em;
+    background: var(--code-bg-color);
+    border-radius: 4px;
+    margin-bottom: 1.5em;
+}
+
+main code {
+    font-family: 'Consolas', 'Monaco', 'Andale Mono', monospace;
+    font-size: 0.9em;
+    padding: 0.2em 0.4em;
+    background: var(--code-bg-color);
+    border-radius: 3px;
+}
+
+/* Loading state */
+.loading {
+    opacity: 0.5;
+    transition: opacity 0.3s;
+}
+
+/* Header and Footer specific styles */
+header h1 + p {
+    margin-top: -0.5em;  /* Pulls the paragraph up closer to the h1 */
+}
+
+footer p {
+    font-size: 0.875rem;  /* 14px at base 16px */
+    opacity: 0.8;
+    margin-top: 1.5em;
+    margin-bottom: 0.75em;
+    line-height: 1.4;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    #menu-toggle {
+        display: block;
+    }
+
+    nav {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: var(--nav-width);
+        height: 100vh;
+        background: var(--bg-color);
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        transition: 0.3s;
+        overflow-y: auto;
+        padding-top: calc(var(--header-height) + var(--spacing));
+    }
+
+    .menu-open nav {
+        right: 0;
+    }
+
+    .menu-open #menu-toggle span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+    }
+
+    .menu-open #menu-toggle span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .menu-open #menu-toggle span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+    }
+}
+
+/* Desktop styles */
+@media (min-width: 769px) {
+    nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: var(--nav-width);
+        height: 100vh;
+        background: var(--bg-color);
+        border-right: 1px solid var(--nav-border-color);
+        padding-top: calc(var(--header-height) + var(--spacing));
+    }
+}
+
+/* Smooth transition for mode changes */
+body, nav, main pre, main code, #menu-toggle span {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Print styles */
+@media print {
+    nav, #menu-toggle {
+        display: none;
+    }
+
+    header, main, footer {
+        margin-left: 0;
+    }
+}
