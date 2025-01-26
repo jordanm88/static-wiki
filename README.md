@@ -18,4 +18,8 @@ A lightweight, markdown-powered CMS that turns your plain text files into a dyna
 - Create *.md files in the content sub-directory - these will be your pages
 - Edit the navmenu.md, header.md and footer.md files in the _components subdirectory
 - Open index.html in your browser to confirm everything works
-- Publish to Github Pages or thehost of your choice
+- Publish to Github Pages or the host of your choice
+
+## Demo
+
+https://jondoran.github.io/jdsite/
