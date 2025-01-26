@@ -96,6 +96,20 @@ async function fetchMD(filename, type = 'content') {
     }
 }
 
+function setLoading(id) {
+    const element = document.getElementById(id);
+    if (element) {
+        element.classList.add('loading');
+    }
+}
+
+function clearLoading(id) {
+    const element = document.getElementById(id);
+    if (element) {
+        element.classList.remove('loading');
+    }
+}
+        
 async function renderSection(id, filename) {
     const element = document.getElementById(id);
     if (!element) {
