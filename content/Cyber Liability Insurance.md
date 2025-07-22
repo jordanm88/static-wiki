@@ -94,7 +94,6 @@ Exclusions: These are specific circumstances or events that are not covered by t
 
 Coverage Extensions: Some policies offer optional or additional coverage extensions that can be tailored to specific needs, such as coverage for reputational harm or cyberterrorism.
 
-When considering cyber liability insurance in the UK, it's crucial to work closely with an experienced insurance agent or broker who can help you understand the policy terms and select the coverage that best suits your organization's needs and risk profile. Additionally, policy wording and terms can vary between insurance providers, so a careful review of the policy documentation is essential.
 ---
 
 *"Sometimes the best way to understand a complex system is to sing about it."*
