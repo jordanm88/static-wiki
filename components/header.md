@@ -1,5 +1,5 @@
-# John Tavner
+# Wiki
 
-Industrial Piping Engineer, Songwriter, Performer
+A tiny wiki, to collect all of my "data" given I am getting old...
 
 ---
